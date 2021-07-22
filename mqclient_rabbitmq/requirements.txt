@@ -1,4 +1,4 @@
-git+https://github.com/WIPACrepo/MQClient@v0.0.8#egg=mqclient
+git+https://github.com/WIPACrepo/MQClient@v0.0.9#egg=mqclient
 mypy
 pika
 pytest
