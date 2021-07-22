@@ -9,7 +9,7 @@ jobs:
             - checkout
             - run: |
                 pip install --user tox
-                tox -vv
+                tox tests/ -vv
 
     integrate:
         docker:
@@ -25,7 +25,7 @@ jobs:
             - run: dockerize -wait tcp://localhost:5672 -timeout 1m # RabbitMQ
             - run: |
                 pip install --user tox
-                tox integrate_tests -vv
+                tox integrate_tests/ -vv
 
     examples:
         docker:
@@ -43,7 +43,7 @@ jobs:
                 pip install --user tox
                 tox --notest -vv
                 . .tox/py/bin/activate
-                ./examples/rabbitmq/run.sh
+                ./examples/run.sh
 
     pycycle:
         docker:

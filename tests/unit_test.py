@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from mqclient.testing.unit_tests import BackendUnitTest
-from mqclient_rabbitmq.queue import Backend
+from mqclient_rabbitmq.rabbitmq import Backend
 
 
 class TestUnitRabbitMQ(BackendUnitTest):
