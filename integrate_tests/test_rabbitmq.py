@@ -1,4 +1,4 @@
-"""Run integration tests for GCP backend."""
+"""Run integration tests for RabbitMQ backend."""
 
 import logging
 
@@ -13,13 +13,13 @@ logging.getLogger("flake8").setLevel(logging.WARNING)
 logging.getLogger("pika").setLevel(logging.WARNING)
 
 
-class TestGCPQueue(integrate_queue.PubSubQueue):
-    """Run PubSubQueue integration tests with GCP backend."""
+class TestRabbitMQQueue(integrate_queue.PubSubQueue):
+    """Run PubSubQueue integration tests with RabbitMQ backend."""
 
     backend = Backend()
 
 
-class TestGCPBackend(integrate_backend_interface.PubSubBackendInterface):
-    """Run PubSubBackendInterface integration tests with GCP backend."""
+class TestRabbitMQBackend(integrate_backend_interface.PubSubBackendInterface):
+    """Run PubSubBackendInterface integration tests with RabbitMQ backend."""
 
     backend = Backend()
