@@ -1,4 +1,4 @@
-"""Queue class encapsulating a pub-sub messaging system with GCP."""
+"""Queue class encapsulating a pub-sub messaging system with RabbitMQ."""
 
 
 from typing import Any, cast
