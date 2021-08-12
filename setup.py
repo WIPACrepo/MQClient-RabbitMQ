@@ -22,7 +22,7 @@ shop = SetupShop(
 # FIXME - remove this hacky code
 kwargs = shop.get_kwargs()
 kwargs["install_requires"].append(
-    "git+git://github.com/WIPACrepo/MQClient.git@add-telemetry"
+    "mqclient @ git+https://github.com/WIPACrepo/MQClient@add-telemetry"
 )
 setup(
     url="https://github.com/WIPACrepo/MQClient-RabbitMQ",
