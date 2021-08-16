@@ -19,8 +19,13 @@ shop = SetupShop(
     "Message Queue Client API with RabbitMQ",
 )
 
+# FIXME - remove this hacky code
+kwargs = shop.get_kwargs()
+kwargs["install_requires"].append(
+    "mqclient @ git+https://github.com/WIPACrepo/MQClient@add-telemetry"
+)
 setup(
     url="https://github.com/WIPACrepo/MQClient-RabbitMQ",
     package_data={shop.name: ["py.typed", "requirements.txt"]},
-    **shop.get_kwargs(),
+    **kwargs,
 )
