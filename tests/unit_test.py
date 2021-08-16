@@ -5,6 +5,7 @@ from typing import Any, List
 from unittest.mock import MagicMock
 
 import pytest
+from mqclient.backend_interface import Message
 from mqclient.testing.unit_tests import BackendUnitTest
 from mqclient_rabbitmq.rabbitmq import Backend
 
@@ -68,7 +69,11 @@ class TestUnitRabbitMQ(BackendUnitTest):
         sub = self.backend.create_sub_queue("localhost", queue_name)
         mock_con.return_value.is_closed = False  # HACK - manually set attr
 
-        fake_message = (MagicMock(delivery_tag=12), None, b"foo, bar")
+        fake_message = (
+            MagicMock(delivery_tag=12),
+            None,
+            Message.serialize(b"foo, bar"),
+        )
         mock_con.return_value.channel.return_value.basic_get.return_value = fake_message
         m = sub.get_message()
         assert m is not None
