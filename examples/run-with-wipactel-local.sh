@@ -15,5 +15,5 @@ tox --notest -vv
 
 docker run -d -p 8084:5672 deadtrickster/rabbitmq_prometheus
 
-python examples/worker.py --address localhost:8084 &
-python examples/server.py --address localhost:8084
+python examples/worker.py --address "guest:guest@localhost:8084/%2F" &
+python examples/server.py --address "guest:guest@localhost:8084/%2F"

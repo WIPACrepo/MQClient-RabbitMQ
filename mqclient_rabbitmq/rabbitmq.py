@@ -19,6 +19,8 @@ from mqclient.backend_interface import (
     Sub,
 )
 
+AMQP_ADDRESS_PREFIX = "amqp://"
+
 
 class RabbitMQ(RawQueue):
     """Base RabbitMQ wrapper.
@@ -30,8 +32,8 @@ class RabbitMQ(RawQueue):
     def __init__(self, address: str, queue: str) -> None:
         super().__init__()
         self.address = address
-        if not self.address.startswith("ampq"):
-            self.address = "amqp://" + self.address
+        if not self.address.startswith(AMQP_ADDRESS_PREFIX):
+            self.address = AMQP_ADDRESS_PREFIX + self.address
         self.queue = queue
         self.connection = None  # type: pika.BlockingConnection
         self.channel = None  # type: pika.adapters.blocking_connection.BlockingChannel
@@ -39,6 +41,7 @@ class RabbitMQ(RawQueue):
     def connect(self) -> None:
         """Set up connection and channel."""
         super().connect()
+        logging.info(f"Connecting with address={self.address}")
         self.connection = pika.BlockingConnection(
             pika.connection.URLParameters(self.address)
         )
