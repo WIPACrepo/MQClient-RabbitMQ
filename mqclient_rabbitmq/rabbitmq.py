@@ -42,7 +42,9 @@ class RabbitMQ(RawQueue):
         """Set up connection and channel."""
         super().connect()
         logging.info(f"Connecting with address={self.address}")
-        pika.BlockingConnection(pika.connection.URLParameters(self.address))
+        self.connection = pika.BlockingConnection(
+            pika.connection.URLParameters(self.address)
+        )
         self.channel = self.connection.channel()
 
     def close(self) -> None:
