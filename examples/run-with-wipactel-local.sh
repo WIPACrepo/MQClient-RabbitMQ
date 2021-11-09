@@ -13,8 +13,8 @@ pip install tox
 tox --notest -vv
 . .tox/py/bin/activate
 
-# docker run -d -p 8084:5672 deadtrickster/rabbitmq_prometheus
-docker run -d --rm -it -p 15672:15672 -p 5672:5672 rabbitmq:3-management
+docker run -d -p 8084:5672 deadtrickster/rabbitmq_prometheus
+# docker run -d --rm -it -p 15672:15672 -p 5672:5672 rabbitmq:3-management
 
 python examples/worker.py &
 python examples/server.py
