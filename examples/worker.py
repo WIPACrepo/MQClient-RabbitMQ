@@ -1,8 +1,11 @@
 """A worker processes messages from one queue, and sends results on a second
 queue."""
 
+import argparse
+import logging
 import subprocess
 
+import coloredlogs  # type: ignore[import]
 from mqclient_rabbitmq import Queue
 
 
@@ -17,7 +20,8 @@ def worker(recv_queue: Queue, send_queue: Queue) -> None:
 
 
 if __name__ == "__main__":
-    import argparse
+    coloredlogs.install(level=logging.DEBUG)
+    logging.getLogger("pika").setLevel(logging.WARNING)
 
     parser = argparse.ArgumentParser(description="Worker")
     parser.add_argument("--address", default="localhost", help="queue address")
