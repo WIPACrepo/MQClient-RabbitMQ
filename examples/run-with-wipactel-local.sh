@@ -13,6 +13,7 @@ pip install tox
 tox --notest -vv
 . .tox/py/bin/activate
 
-docker run -d -p 8081:15672 deadtrickster/rabbitmq_prometheus
+docker run -d -p 8084:5672 deadtrickster/rabbitmq_prometheus
 
-`dirname "$0"`/run.sh
+python examples/worker.py --address localhost:8084 &
+python examples/server.py --address localhost:8084
