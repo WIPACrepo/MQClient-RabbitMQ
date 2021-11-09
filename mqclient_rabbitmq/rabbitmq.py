@@ -19,6 +19,8 @@ from mqclient.backend_interface import (
     Sub,
 )
 
+AMQP_ADDRESS_PREFIX = "amqp://"
+
 
 class RabbitMQ(RawQueue):
     """Base RabbitMQ wrapper.
@@ -30,8 +32,8 @@ class RabbitMQ(RawQueue):
     def __init__(self, address: str, queue: str) -> None:
         super().__init__()
         self.address = address
-        if not self.address.startswith("ampq"):
-            self.address = "amqp://" + self.address
+        if not self.address.startswith(AMQP_ADDRESS_PREFIX):
+            self.address = AMQP_ADDRESS_PREFIX + self.address
         self.queue = queue
         self.connection = None  # type: pika.BlockingConnection
         self.channel = None  # type: pika.adapters.blocking_connection.BlockingChannel
@@ -39,6 +41,7 @@ class RabbitMQ(RawQueue):
     def connect(self) -> None:
         """Set up connection and channel."""
         super().connect()
+        logging.info(f"Connecting with address={self.address}")
         self.connection = pika.BlockingConnection(
             pika.connection.URLParameters(self.address)
         )
@@ -338,8 +341,10 @@ class Backend(backend_interface.Backend):
     """
 
     @staticmethod
-    def create_pub_queue(address: str, name: str) -> RabbitMQPub:
+    def create_pub_queue(address: str, name: str, auth_token: str = "") -> RabbitMQPub:
         """Create a publishing queue.
+
+        # NOTE - `auth_token` is not used currently
 
         Args:
             address (str): address of queue
@@ -353,8 +358,12 @@ class Backend(backend_interface.Backend):
         return q
 
     @staticmethod
-    def create_sub_queue(address: str, name: str, prefetch: int = 1) -> RabbitMQSub:
+    def create_sub_queue(
+        address: str, name: str, prefetch: int = 1, auth_token: str = ""
+    ) -> RabbitMQSub:
         """Create a subscription queue.
+
+        # NOTE - `auth_token` is not used currently
 
         Args:
             address (str): address of queue

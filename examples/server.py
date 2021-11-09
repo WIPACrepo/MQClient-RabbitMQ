@@ -1,7 +1,10 @@
 """A server sends work out on one queue, and receives results on another."""
 
+import argparse
+import logging
 import typing
 
+import coloredlogs  # type: ignore[import]
 from mqclient_rabbitmq import Queue
 
 
@@ -24,7 +27,8 @@ def server(work_queue: Queue, result_queue: Queue) -> None:
 
 
 if __name__ == "__main__":
-    import argparse
+    coloredlogs.install(level=logging.DEBUG)
+    logging.getLogger("pika").setLevel(logging.WARNING)
 
     parser = argparse.ArgumentParser(description="Worker")
     parser.add_argument("--address", default="localhost", help="queue address")

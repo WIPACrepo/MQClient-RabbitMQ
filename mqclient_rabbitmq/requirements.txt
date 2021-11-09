@@ -1,8 +1,2 @@
-git+https://github.com/WIPACrepo/MQClient@v0.0.11#egg=mqclient
-mypy
+git+https://github.com/WIPACrepo/MQClient@v0.1.1#egg=mqclient
 pika
-pytest
-pytest-asyncio
-pytest-flake8
-pytest-mock
-pytest-mypy
