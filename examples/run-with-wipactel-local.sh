@@ -12,6 +12,7 @@ export WIPACTEL_SERVICE_NAME_PREFIX=mqclient-rabbitmq
 pip install tox
 tox --notest -vv
 . .tox/py/bin/activate
-./resources/gcp-install.sh
+
+docker run -d -p 8081:15672 deadtrickster/rabbitmq_prometheus
 
 `dirname "$0"`/run.sh
