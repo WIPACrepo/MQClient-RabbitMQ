@@ -1,6 +1,7 @@
 """A server sends work out on one queue, and receives results on another."""
 
 import argparse
+import asyncio
 import logging
 import typing
 
@@ -8,14 +9,14 @@ import coloredlogs  # type: ignore[import]
 from mqclient_rabbitmq import Queue
 
 
-def server(work_queue: Queue, result_queue: Queue) -> None:
+async def server(work_queue: Queue, result_queue: Queue) -> None:
     """Demo example server."""
     for i in range(100):
         work_queue.send({"id": i, "cmd": f'echo "{i}"'})
 
     results = {}
     result_queue.timeout = 5
-    with result_queue.recv() as stream:
+    async with result_queue.recv() as stream:
         for data in stream:
             assert isinstance(data, dict)
             results[typing.cast(int, data["id"])] = typing.cast(str, data["out"])
@@ -44,4 +45,4 @@ if __name__ == "__main__":
         address=args.address, name=args.result_queue, prefetch=args.prefetch
     )
 
-    server(workq, resultq)
+    asyncio.get_event_loop().run_until_complete(server(workq, resultq))

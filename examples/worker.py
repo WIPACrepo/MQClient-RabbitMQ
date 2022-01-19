@@ -2,6 +2,7 @@
 queue."""
 
 import argparse
+import asyncio
 import logging
 import subprocess
 
@@ -9,9 +10,9 @@ import coloredlogs  # type: ignore[import]
 from mqclient_rabbitmq import Queue
 
 
-def worker(recv_queue: Queue, send_queue: Queue) -> None:
+async def worker(recv_queue: Queue, send_queue: Queue) -> None:
     """Demo example worker."""
-    with recv_queue.recv() as stream:
+    async with recv_queue.recv() as stream:
         for data in stream:
             cmd = data["cmd"]
             out = subprocess.check_output(cmd, shell=True)
@@ -33,4 +34,4 @@ if __name__ == "__main__":
     inq = Queue(address=args.address, name=args.in_queue, prefetch=args.prefetch)
     outq = Queue(address=args.address, name=args.out_queue)
 
-    worker(inq, outq)
+    asyncio.get_event_loop().run_until_complete(worker(inq, outq))
