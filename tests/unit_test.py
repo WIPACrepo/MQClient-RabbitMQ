@@ -5,8 +5,8 @@ from typing import Any, List
 from unittest.mock import MagicMock
 
 import pytest
+from mqclient.abstract_backend_tests.unit_tests import BackendUnitTest
 from mqclient.backend_interface import Message
-from mqclient.implementation_tests.unit_tests import BackendUnitTest
 from mqclient_rabbitmq.rabbitmq import Backend
 
 
