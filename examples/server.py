@@ -12,7 +12,7 @@ from mqclient_rabbitmq import Queue
 async def server(work_queue: Queue, result_queue: Queue) -> None:
     """Demo example server."""
     for i in range(100):
-        work_queue.send({"id": i, "cmd": f'echo "{i}"'})
+        await work_queue.send({"id": i, "cmd": f'echo "{i}"'})
 
     results = {}
     result_queue.timeout = 5

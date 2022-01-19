@@ -17,7 +17,7 @@ async def worker(recv_queue: Queue, send_queue: Queue) -> None:
             cmd = data["cmd"]
             out = subprocess.check_output(cmd, shell=True)
             data["out"] = out.decode("utf-8")
-            send_queue.send(data)
+            await send_queue.send(data)
 
 
 if __name__ == "__main__":
