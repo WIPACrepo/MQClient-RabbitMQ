@@ -3,7 +3,7 @@
 import logging
 import time
 from functools import partial
-from typing import Any, Callable, Generator, Optional, Union
+from typing import Any, AsyncGenerator, Callable, Generator, Optional, Union
 
 import pika  # type: ignore
 from mqclient import backend_interface, log_msgs
@@ -38,7 +38,7 @@ class RabbitMQ(RawQueue):
         self.connection = None  # type: pika.BlockingConnection
         self.channel = None  # type: pika.adapters.blocking_connection.BlockingChannel
 
-    def connect(self) -> None:
+    async def connect(self) -> None:
         """Set up connection and channel."""
         super().connect()
         logging.info(f"Connecting with address={self.address}")
@@ -47,7 +47,7 @@ class RabbitMQ(RawQueue):
         )
         self.channel = self.connection.channel()
 
-    def close(self) -> None:
+    async def close(self) -> None:
         """Close connection."""
         super().close()
         if not self.connection:
@@ -72,7 +72,7 @@ class RabbitMQPub(RabbitMQ, Pub):
         logging.debug(f"{log_msgs.INIT_PUB} ({args}; {kwargs})")
         super().__init__(*args, **kwargs)
 
-    def connect(self) -> None:
+    async def connect(self) -> None:
         """Set up connection, channel, and queue.
 
         Turn on delivery confirmations.
@@ -84,13 +84,13 @@ class RabbitMQPub(RabbitMQ, Pub):
         self.channel.confirm_delivery()
         logging.debug(log_msgs.CONNECTED_PUB)
 
-    def close(self) -> None:
+    async def close(self) -> None:
         """Close connection."""
         logging.debug(log_msgs.CLOSING_PUB)
         super().close()
         logging.debug(log_msgs.CLOSED_PUB)
 
-    def send_message(self, msg: bytes) -> None:
+    async def send_message(self, msg: bytes) -> None:
         """Send a message on a queue.
 
         Args:
@@ -130,7 +130,7 @@ class RabbitMQSub(RabbitMQ, Sub):
         self.consumer_id = None
         self.prefetch = 1
 
-    def connect(self) -> None:
+    async def connect(self) -> None:
         """Set up connection, channel, and queue.
 
         Turn on prefetching.
@@ -141,7 +141,7 @@ class RabbitMQSub(RabbitMQ, Sub):
         self.channel.basic_qos(prefetch_count=self.prefetch, global_qos=True)
         logging.debug(log_msgs.CONNECTED_SUB)
 
-    def close(self) -> None:
+    async def close(self) -> None:
         """Close connection."""
         logging.debug(log_msgs.CLOSING_SUB)
         super().close()
@@ -168,7 +168,7 @@ class RabbitMQSub(RabbitMQ, Sub):
         else:
             return Message(method_frame.delivery_tag, body)
 
-    def get_message(
+    async def get_message(
         self, timeout_millis: Optional[int] = TIMEOUT_MILLIS_DEFAULT
     ) -> Optional[Message]:
         """Get a message from a queue.
@@ -191,7 +191,7 @@ class RabbitMQSub(RabbitMQ, Sub):
             logging.debug(log_msgs.GETMSG_NO_MESSAGE)
             return None
 
-    def ack_message(self, msg: Message) -> None:
+    async def ack_message(self, msg: Message) -> None:
         """Ack a message from the queue.
 
         Note that RabbitMQ acks messages in-order, so acking message
@@ -204,7 +204,7 @@ class RabbitMQSub(RabbitMQ, Sub):
         try_call(self, partial(self.channel.basic_ack, msg.msg_id))
         logging.debug(f"{log_msgs.ACKED_MESSAGE} ({msg.msg_id!r}).")
 
-    def reject_message(self, msg: Message) -> None:
+    async def reject_message(self, msg: Message) -> None:
         """Reject (nack) a message from the queue.
 
         Note that RabbitMQ acks messages in-order, so nacking message
@@ -217,9 +217,9 @@ class RabbitMQSub(RabbitMQ, Sub):
         try_call(self, partial(self.channel.basic_nack, msg.msg_id))
         logging.debug(f"{log_msgs.NACKED_MESSAGE} ({msg.msg_id!r}).")
 
-    def message_generator(
+    async def message_generator(  # type: ignore[override] # there's a mypy bug here
         self, timeout: int = 60, propagate_error: bool = True
-    ) -> Generator[Optional[Message], None, None]:
+    ) -> AsyncGenerator[Optional[Message], None]:
         """Yield Messages.
 
         Generate messages with variable timeout.
@@ -341,7 +341,9 @@ class Backend(backend_interface.Backend):
     """
 
     @staticmethod
-    def create_pub_queue(address: str, name: str, auth_token: str = "") -> RabbitMQPub:
+    async def create_pub_queue(
+        address: str, name: str, auth_token: str = ""
+    ) -> RabbitMQPub:
         """Create a publishing queue.
 
         # NOTE - `auth_token` is not used currently
@@ -358,7 +360,7 @@ class Backend(backend_interface.Backend):
         return q
 
     @staticmethod
-    def create_sub_queue(
+    async def create_sub_queue(
         address: str, name: str, prefetch: int = 1, auth_token: str = ""
     ) -> RabbitMQSub:
         """Create a subscription queue.
