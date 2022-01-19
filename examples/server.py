@@ -17,7 +17,7 @@ async def server(work_queue: Queue, result_queue: Queue) -> None:
     results = {}
     result_queue.timeout = 5
     async with result_queue.recv() as stream:
-        for data in stream:
+        async for data in stream:
             assert isinstance(data, dict)
             results[typing.cast(int, data["id"])] = typing.cast(str, data["out"])
 
