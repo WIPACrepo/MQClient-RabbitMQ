@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.0 (2022-01-19)
+### Feature
+* Convert to Async-Await ([#7](https://github.com/WIPACrepo/MQClient-RabbitMQ/issues/7)) ([`932e636`](https://github.com/WIPACrepo/MQClient-RabbitMQ/commit/932e636b176d61d39d940c8486b38bcf2d1f9226))
+
 ## v0.0.5 (2021-11-09)
 
 
