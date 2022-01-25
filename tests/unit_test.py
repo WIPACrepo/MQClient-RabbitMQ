@@ -29,7 +29,7 @@ class TestUnitRabbitMQ(BackendUnitTest):
     @staticmethod
     def _get_close_mock_fn(mock_con: Any) -> Any:
         """Return mock 'close' function call."""
-        return mock_con.return_value.channel.return_value.cancel
+        return mock_con.return_value.close
 
     @staticmethod
     async def _enqueue_mock_messages(
