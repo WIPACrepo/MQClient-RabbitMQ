@@ -17,17 +17,17 @@ class TestUnitRabbitMQ(BackendUnitTest):
     con_patch = "pika.BlockingConnection"
 
     @staticmethod
-    def _get_mock_nack(mock_con: Any) -> Any:
+    def _get_nack_mock_fn(mock_con: Any) -> Any:
         """Return mock 'nack' function call."""
         return mock_con.return_value.channel.return_value.basic_nack
 
     @staticmethod
-    def _get_mock_ack(mock_con: Any) -> Any:
+    def _get_ack_mock_fn(mock_con: Any) -> Any:
         """Return mock 'ack' function call."""
         return mock_con.return_value.channel.return_value.basic_ack
 
     @staticmethod
-    def _get_mock_close(mock_con: Any) -> Any:
+    def _get_close_mock_fn(mock_con: Any) -> Any:
         """Return mock 'close' function call."""
         return mock_con.return_value.channel.return_value.cancel
 
@@ -91,11 +91,13 @@ class TestUnitRabbitMQ(BackendUnitTest):
         mock_con.return_value.channel.return_value.consume.return_value = [err_msg]
         with pytest.raises(Exception):
             _ = [m async for m in sub.message_generator()]
-        self._get_mock_close(mock_con).assert_not_called()  # would be called by Queue
+        # would be called by Queue
+        self._get_close_mock_fn(mock_con).assert_not_called()
 
         # `propagate_error` attribute has no affect (b/c it deals w/ *downstream* errors)
         err_msg = (unittest.mock.ANY, None, b"foo, bar")
         mock_con.return_value.channel.return_value.consume.return_value = [err_msg]
         with pytest.raises(Exception):
             _ = [m async for m in sub.message_generator(propagate_error=False)]
-        self._get_mock_close(mock_con).assert_not_called()  # would be called by Queue
+        # would be called by Queue
+        self._get_close_mock_fn(mock_con).assert_not_called()
