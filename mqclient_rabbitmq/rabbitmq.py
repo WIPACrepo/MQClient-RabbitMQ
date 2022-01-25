@@ -163,7 +163,7 @@ class RabbitMQSub(RabbitMQ, Sub):
             raise ClosingFailedExcpetion("No channel to close.")
 
         if self.channel.is_open:
-            raise ClosingFailedExcpetion("Channel remains open after connection close.")
+            logging.warning("Channel remains open after connection close.")
 
         logging.debug(log_msgs.CLOSED_SUB)
 
