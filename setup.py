@@ -19,6 +19,10 @@ shop = SetupShop(
     "Message Queue Client API with RabbitMQ",
 )
 
+subprocess.run(
+    "pip install git+https://github.com/WIPACrepo/MQClient@more-fixes".split(),
+    check=True,
+)
 setup(
     url="https://github.com/WIPACrepo/MQClient-RabbitMQ",
     package_data={shop.name: ["py.typed", "requirements.txt"]},

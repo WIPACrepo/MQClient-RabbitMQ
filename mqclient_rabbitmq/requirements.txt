@@ -1,2 +1,1 @@
-git+https://github.com/WIPACrepo/MQClient@v0.2.2#egg=mqclient
 pika
