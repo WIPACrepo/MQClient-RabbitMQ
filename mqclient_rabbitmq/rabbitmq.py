@@ -217,7 +217,7 @@ class RabbitMQSub(RabbitMQ, Sub):
         await try_call(self, partial(self.channel.basic_nack, msg.msg_id))
         logging.debug(f"{log_msgs.NACKED_MESSAGE} ({msg.msg_id!r}).")
 
-    async def message_generator(  # type: ignore[override] # there's a mypy bug here
+    async def message_generator(
         self, timeout: int = 60, propagate_error: bool = True
     ) -> AsyncGenerator[Optional[Message], None]:
         """Yield Messages.
