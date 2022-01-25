@@ -159,7 +159,7 @@ class RabbitMQSub(RabbitMQ, Sub):
         if not self.channel:
             raise ClosingFailedExcpetion("No channel to close.")
         try:
-            self.channel.cancel()  # rejects all pending ackable messages
+            self.channel.close()  # rejects all pending ackable messages
         except Exception as e:
             raise ClosingFailedExcpetion() from e
 
