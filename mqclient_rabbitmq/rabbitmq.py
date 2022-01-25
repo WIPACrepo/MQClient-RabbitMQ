@@ -35,8 +35,8 @@ class RabbitMQ(RawQueue):
         if not self.address.startswith(AMQP_ADDRESS_PREFIX):
             self.address = AMQP_ADDRESS_PREFIX + self.address
         self.queue = queue
-        self.connection = None  # type: pika.BlockingConnection
-        self.channel = None  # type: pika.adapters.blocking_connection.BlockingChannel
+        self.connection: Optional[pika.BlockingConnection] = None
+        self.channel: Optional[pika.adapters.blocking_connection.BlockingChannel] = None
 
     async def connect(self) -> None:
         """Set up connection and channel."""
