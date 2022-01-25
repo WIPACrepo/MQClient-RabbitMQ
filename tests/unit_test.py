@@ -62,7 +62,7 @@ class TestUnitRabbitMQ(BackendUnitTest):
     async def test_send_message(self, mock_con: Any, queue_name: str) -> None:
         """Test sending message."""
         pub = await self.backend.create_pub_queue("localhost", queue_name)
-        pub.send_message(b"foo, bar, baz")
+        await pub.send_message(b"foo, bar, baz")
         mock_con.return_value.channel.return_value.basic_publish.assert_called_with(
             exchange="", routing_key=queue_name, body=b"foo, bar, baz"
         )
