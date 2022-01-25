@@ -152,16 +152,18 @@ class RabbitMQSub(RabbitMQ, Sub):
         logging.debug(log_msgs.CONNECTED_SUB)
 
     async def close(self) -> None:
-        """Close connection."""
+        """Close connection.
+
+        Also, channel will be canceled (rejects all pending ackable messages).
+        """
         logging.debug(log_msgs.CLOSING_SUB)
         await super().close()
 
         if not self.channel:
             raise ClosingFailedExcpetion("No channel to close.")
-        try:
-            self.channel.close()  # rejects all pending ackable messages
-        except Exception as e:
-            raise ClosingFailedExcpetion() from e
+
+        if self.channel.is_open:
+            raise ClosingFailedExcpetion("Channel remains open after connection close.")
 
         logging.debug(log_msgs.CLOSED_SUB)
 
