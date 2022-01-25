@@ -13,6 +13,7 @@ from mqclient.backend_interface import (
     TRY_ATTEMPTS,
     AlreadyClosedExcpetion,
     ClosingFailedExcpetion,
+    ConnectingFailedExcpetion,
     Message,
     Pub,
     RawQueue,
@@ -80,8 +81,12 @@ class RabbitMQPub(RabbitMQ, Pub):
         logging.debug(log_msgs.CONNECTING_PUB)
         await super().connect()
 
+        if not self.channel:
+            raise ConnectingFailedExcpetion("No channel to configure connection.")
+
         self.channel.queue_declare(queue=self.queue, durable=False)
         self.channel.confirm_delivery()
+
         logging.debug(log_msgs.CONNECTED_PUB)
 
     async def close(self) -> None:
@@ -137,8 +142,13 @@ class RabbitMQSub(RabbitMQ, Sub):
         """
         logging.debug(log_msgs.CONNECTING_SUB)
         await super().connect()
+
+        if not self.channel:
+            raise ConnectingFailedExcpetion("No channel to configure connection.")
+
         self.channel.queue_declare(queue=self.queue, durable=False)
         self.channel.basic_qos(prefetch_count=self.prefetch, global_qos=True)
+
         logging.debug(log_msgs.CONNECTED_SUB)
 
     async def close(self) -> None:
