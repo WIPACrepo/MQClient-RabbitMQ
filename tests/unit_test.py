@@ -43,12 +43,14 @@ class TestUnitRabbitMQ(BackendUnitTest):
             messages += [(None, None, None)]  # type: ignore
         mock_con.return_value.channel.return_value.consume.return_value = messages
 
+    @pytest.mark.asyncio
     async def test_create_pub_queue(self, mock_con: Any, queue_name: str) -> None:
         """Test creating pub queue."""
         pub = await self.backend.create_pub_queue("localhost", queue_name)
         assert pub.queue == queue_name
         mock_con.return_value.channel.assert_called()
 
+    @pytest.mark.asyncio
     async def test_create_sub_queue(self, mock_con: Any, queue_name: str) -> None:
         """Test creating sub queue."""
         sub = await self.backend.create_sub_queue("localhost", queue_name, prefetch=213)
@@ -56,6 +58,7 @@ class TestUnitRabbitMQ(BackendUnitTest):
         assert sub.prefetch == 213
         mock_con.return_value.channel.assert_called()
 
+    @pytest.mark.asyncio
     async def test_send_message(self, mock_con: Any, queue_name: str) -> None:
         """Test sending message."""
         pub = await self.backend.create_pub_queue("localhost", queue_name)
@@ -64,6 +67,7 @@ class TestUnitRabbitMQ(BackendUnitTest):
             exchange="", routing_key=queue_name, body=b"foo, bar, baz"
         )
 
+    @pytest.mark.asyncio
     async def test_get_message(self, mock_con: Any, queue_name: str) -> None:
         """Test getting message."""
         sub = await self.backend.create_sub_queue("localhost", queue_name)
@@ -76,6 +80,7 @@ class TestUnitRabbitMQ(BackendUnitTest):
         assert m.msg_id == 12
         assert m.data == "foo, bar"
 
+    @pytest.mark.asyncio
     async def test_message_generator_10_upstream_error(
         self, mock_con: Any, queue_name: str
     ) -> None:
