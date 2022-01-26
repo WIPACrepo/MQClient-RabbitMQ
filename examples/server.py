@@ -13,8 +13,7 @@ async def server(work_queue: Queue, result_queue: Queue) -> None:
     """Demo example server."""
     async with work_queue.sender() as out_stream:
         for i in range(100):
-            await out_stream.send()
-            # await out_stream.send({"id": i, "cmd": f'echo "{i}"'})
+            await out_stream.send({"id": i, "cmd": f'echo "{i}"'})
 
     results = {}
     result_queue.timeout = 5
