@@ -11,13 +11,14 @@ from mqclient_rabbitmq import Queue
 
 async def server(work_queue: Queue, result_queue: Queue) -> None:
     """Demo example server."""
-    for i in range(100):
-        await work_queue.send({"id": i, "cmd": f'echo "{i}"'})
+    async with work_queue.sender() as out_stream:
+        for i in range(100):
+            await out_stream.send({"id": i, "cmd": f'echo "{i}"'})
 
     results = {}
     result_queue.timeout = 5
-    async with result_queue.recv() as stream:
-        async for data in stream:
+    async with result_queue.recv() as in_stream:
+        async for data in in_stream:
             assert isinstance(data, dict)
             results[typing.cast(int, data["id"])] = typing.cast(str, data["out"])
 

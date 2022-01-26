@@ -13,6 +13,7 @@ from mqclient.backend_interface import (
     TRY_ATTEMPTS,
     AlreadyClosedExcpetion,
     ClosingFailedExcpetion,
+    ConnectingFailedExcpetion,
     Message,
     Pub,
     RawQueue,
@@ -35,8 +36,8 @@ class RabbitMQ(RawQueue):
         if not self.address.startswith(AMQP_ADDRESS_PREFIX):
             self.address = AMQP_ADDRESS_PREFIX + self.address
         self.queue = queue
-        self.connection = None  # type: pika.BlockingConnection
-        self.channel = None  # type: pika.adapters.blocking_connection.BlockingChannel
+        self.connection: Optional[pika.BlockingConnection] = None
+        self.channel: Optional[pika.adapters.blocking_connection.BlockingChannel] = None
 
     async def connect(self) -> None:
         """Set up connection and channel."""
@@ -50,14 +51,21 @@ class RabbitMQ(RawQueue):
     async def close(self) -> None:
         """Close connection."""
         await super().close()
+
+        if not self.channel:
+            raise ClosingFailedExcpetion("No channel to close.")
         if not self.connection:
             raise ClosingFailedExcpetion("No connection to close.")
         if self.connection.is_closed:
             raise AlreadyClosedExcpetion()
+
         try:
             self.connection.close()
         except Exception as e:
             raise ClosingFailedExcpetion() from e
+
+        if self.channel.is_open:
+            logging.warning("Channel remains open after connection close.")
 
 
 class RabbitMQPub(RabbitMQ, Pub):
@@ -80,8 +88,12 @@ class RabbitMQPub(RabbitMQ, Pub):
         logging.debug(log_msgs.CONNECTING_PUB)
         await super().connect()
 
+        if not self.channel:
+            raise ConnectingFailedExcpetion("No channel to configure connection.")
+
         self.channel.queue_declare(queue=self.queue, durable=False)
         self.channel.confirm_delivery()
+
         logging.debug(log_msgs.CONNECTED_PUB)
 
     async def close(self) -> None:
@@ -137,22 +149,22 @@ class RabbitMQSub(RabbitMQ, Sub):
         """
         logging.debug(log_msgs.CONNECTING_SUB)
         await super().connect()
+
+        if not self.channel:
+            raise ConnectingFailedExcpetion("No channel to configure connection.")
+
         self.channel.queue_declare(queue=self.queue, durable=False)
         self.channel.basic_qos(prefetch_count=self.prefetch, global_qos=True)
+
         logging.debug(log_msgs.CONNECTED_SUB)
 
     async def close(self) -> None:
-        """Close connection."""
+        """Close connection.
+
+        Also, channel will be canceled (rejects all pending ackable messages).
+        """
         logging.debug(log_msgs.CLOSING_SUB)
         await super().close()
-
-        if not self.channel:
-            raise ClosingFailedExcpetion("No channel to close.")
-        try:
-            self.channel.cancel()  # rejects all pending ackable messages
-        except Exception as e:
-            raise ClosingFailedExcpetion() from e
-
         logging.debug(log_msgs.CLOSED_SUB)
 
     @staticmethod
@@ -217,7 +229,7 @@ class RabbitMQSub(RabbitMQ, Sub):
         await try_call(self, partial(self.channel.basic_nack, msg.msg_id))
         logging.debug(f"{log_msgs.NACKED_MESSAGE} ({msg.msg_id!r}).")
 
-    async def message_generator(  # type: ignore[override] # there's a mypy bug here
+    async def message_generator(
         self, timeout: int = 60, propagate_error: bool = True
     ) -> AsyncGenerator[Optional[Message], None]:
         """Yield Messages.
