@@ -51,14 +51,21 @@ class RabbitMQ(RawQueue):
     async def close(self) -> None:
         """Close connection."""
         await super().close()
+
+        if not self.channel:
+            raise ClosingFailedExcpetion("No channel to close.")
         if not self.connection:
             raise ClosingFailedExcpetion("No connection to close.")
         if self.connection.is_closed:
             raise AlreadyClosedExcpetion()
+
         try:
             self.connection.close()
         except Exception as e:
             raise ClosingFailedExcpetion() from e
+
+        if self.channel.is_open:
+            logging.warning("Channel remains open after connection close.")
 
 
 class RabbitMQPub(RabbitMQ, Pub):
@@ -158,13 +165,6 @@ class RabbitMQSub(RabbitMQ, Sub):
         """
         logging.debug(log_msgs.CLOSING_SUB)
         await super().close()
-
-        if not self.channel:
-            raise ClosingFailedExcpetion("No channel to close.")
-
-        if self.channel.is_open:
-            logging.warning("Channel remains open after connection close.")
-
         logging.debug(log_msgs.CLOSED_SUB)
 
     @staticmethod
