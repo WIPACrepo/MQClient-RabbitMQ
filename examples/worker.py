@@ -12,12 +12,12 @@ from mqclient_rabbitmq import Queue
 
 async def worker(recv_queue: Queue, send_queue: Queue) -> None:
     """Demo example worker."""
-    async with recv_queue.recv() as stream:
+    async with recv_queue.recv() as stream, send_queue.sender() as send:
         async for data in stream:
             cmd = data["cmd"]
             out = subprocess.check_output(cmd, shell=True)
             data["out"] = out.decode("utf-8")
-            await send_queue.send(data)
+            await send(data)
 
 
 if __name__ == "__main__":
