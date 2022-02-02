@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2022-02-02)
+### Feature
+* Upgrade to MQClient's Breaking Changes ([#11](https://github.com/WIPACrepo/MQClient-RabbitMQ/issues/11)) ([`e19ed56`](https://github.com/WIPACrepo/MQClient-RabbitMQ/commit/e19ed56ca2b399786b63bbae031313a529cbfdf2))
+
 ## v0.1.2 (2022-01-26)
 
 
