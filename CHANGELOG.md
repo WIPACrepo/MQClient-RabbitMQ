@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2022-03-22)
+### Feature
+* Updates for PyPI Publish ([#12](https://github.com/WIPACrepo/MQClient-RabbitMQ/issues/12)) ([`8fa7c2e`](https://github.com/WIPACrepo/MQClient-RabbitMQ/commit/8fa7c2e3746492d461580e2960c8c4c8284b2514))
+
 ## v0.2.0 (2022-02-02)
 ### Feature
 * Upgrade to MQClient's Breaking Changes ([#11](https://github.com/WIPACrepo/MQClient-RabbitMQ/issues/11)) ([`e19ed56`](https://github.com/WIPACrepo/MQClient-RabbitMQ/commit/e19ed56ca2b399786b63bbae031313a529cbfdf2))
