@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-pika==1.2.0
+pika==1.2.1
     # via wipac-mqclient-rabbitmq (setup.py)
-wipac-mqclient==0.4.0
+wipac-mqclient==0.5.0
     # via wipac-mqclient-rabbitmq (setup.py)
