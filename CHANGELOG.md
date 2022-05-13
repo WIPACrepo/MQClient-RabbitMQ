@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2022-05-13)
+### Feature
+* Package-Specific Logger `"mqclient-rabbitmq"` ([#13](https://github.com/WIPACrepo/MQClient-RabbitMQ/issues/13)) ([`2d33e07`](https://github.com/WIPACrepo/MQClient-RabbitMQ/commit/2d33e07d06a9801fbd6f80bf395e0d77ee4e96c2))
+
 ## v0.3.0 (2022-03-22)
 ### Feature
 * Updates for PyPI Publish ([#12](https://github.com/WIPACrepo/MQClient-RabbitMQ/issues/12)) ([`8fa7c2e`](https://github.com/WIPACrepo/MQClient-RabbitMQ/commit/8fa7c2e3746492d461580e2960c8c4c8284b2514))
